@@ -18,7 +18,7 @@ export default function AdminProductos() {
     const token = localStorage.getItem('token_admin');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/cambiar-password', {
+      const res = await fetch(`${BASE_URL}/api/auth/cambiar-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -59,24 +59,20 @@ export default function AdminProductos() {
       setLoading(true);
       const res = await fetch(API_URL);
       const data = await res.json();
-      if (data.ok) setProductos(data.data);
+      
+      // Maneja si la API devuelve directamente un arreglo [...] o un objeto { data: [...] }
+      const lista = Array.isArray(data) ? data : (data.data || []);
+      setProductos(lista);
     } catch (err) {
-      console.error('Error al cargar catálogo:', err);
+      console.error('Error al cargar productos en Admin:', err);
+      setProductos([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    cargarProductos()
-      .then((res) => {
-        // Garantiza tomar res.data independientemente del formato
-        const lista = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-        setProductos(lista);
-      })
-      .catch((err) => {
-        console.error("Error al cargar productos en Admin:", err);
-      });
+    cargarProductos();
   }, []);
 
   // Abrir modal para crear

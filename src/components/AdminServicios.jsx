@@ -22,9 +22,13 @@ export default function AdminServicios() {
       setLoading(true);
       const res = await fetch(API_URL);
       const data = await res.json();
-      if (data.ok) setServicios(data.data);
+      
+      // Soporta tanto array directo [...] como { ok: true, data: [...] }
+      const lista = Array.isArray(data) ? data : (data.data || []);
+      setServicios(lista);
     } catch (err) {
       console.error('Error al cargar servicios:', err);
+      setServicios([]);
     } finally {
       setLoading(false);
     }

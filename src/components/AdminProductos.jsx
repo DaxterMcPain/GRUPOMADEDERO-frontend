@@ -68,7 +68,15 @@ export default function AdminProductos() {
   };
 
   useEffect(() => {
-    cargarProductos();
+    cargarProductos()
+      .then((res) => {
+        // Garantiza tomar res.data independientemente del formato
+        const lista = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        setProductos(lista);
+      })
+      .catch((err) => {
+        console.error("Error al cargar productos en Admin:", err);
+      });
   }, []);
 
   // Abrir modal para crear

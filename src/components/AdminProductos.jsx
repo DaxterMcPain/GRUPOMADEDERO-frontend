@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AdminServicios from './AdminServicios';
 
-const API_URL = 'http://localhost:5000/api/productos';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://grupomaderero-backend.onrender.com';
+const API_URL = `${BASE_URL}/api/productos`;
 
 export default function AdminProductos() {
   const [productos, setProductos] = useState([]);

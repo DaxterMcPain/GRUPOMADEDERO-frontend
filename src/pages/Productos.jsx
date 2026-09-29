@@ -10,8 +10,9 @@ export default function Productos() {
   useEffect(() => {
     obtenerProductos()
       .then((res) => {
-        // Guarda en el estado la lista de productos enviada por el backend
-        setCatalogo(res.data.data || []);
+        // CORRECCIÓN: Tu backend devuelve el arreglo directamente en res.data
+        const listaProductos = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        setCatalogo(listaProductos);
         setCargando(false);
       })
       .catch((err) => {
@@ -154,19 +155,26 @@ export default function Productos() {
                   Especificaciones e Información:
                 </p>
                 <ul className="space-y-2">
-                  {Array.isArray(productoSeleccionado.detalles) ? (
-                    productoSeleccionado.detalles.map((item, idx) => (
-                      <li key={idx} className="flex items-start text-xs text-stone-700 leading-relaxed">
+                  {(() => {
+                    let items = productoSeleccionado.detalles;
+                    if (typeof items === 'string') {
+                      try { items = JSON.parse(items); } catch (e) { items = []; }
+                    }
+                    
+                    return Array.isArray(items) && items.length > 0 ? (
+                      items.map((item, idx) => (
+                        <li key={idx} className="flex items-start text-xs text-stone-700 leading-relaxed">
+                          <span className="text-amber-800 font-bold mr-2">✓</span>
+                          <span>{item}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="flex items-start text-xs text-stone-700 leading-relaxed">
                         <span className="text-amber-800 font-bold mr-2">✓</span>
-                        <span>{item}</span>
+                        <span>{productoSeleccionado.descripcion}</span>
                       </li>
-                    ))
-                  ) : (
-                    <li className="flex items-start text-xs text-stone-700 leading-relaxed">
-                      <span className="text-amber-800 font-bold mr-2">✓</span>
-                      <span>{productoSeleccionado.descripcion}</span>
-                    </li>
-                  )}
+                    );
+                  })()}
                 </ul>
               </div>
 
